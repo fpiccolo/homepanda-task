@@ -5,7 +5,7 @@ DOCKER_COMP = docker-compose
 PHP_CONT = $(DOCKER_COMP) exec php
 
 
-init: start composer-install migrate
+init: start composer-install migrate fixture
 
 destroy:
 	@$(DOCKER_COMP) down --remove-orphans -v
@@ -33,3 +33,14 @@ composer-install:
 ## —— Doctrine ————————————————————————————————————————————————————————————————
 migrate:
 	@$(PHP_CONT) bin/console --no-interaction doctrine:migration:migrate
+
+fixture:
+	@$(PHP_CONT) bin/console --no-interaction doctrine:fixtures:load
+
+## —— Command ————————————————————————————————————————————————————————————————
+customer-transactions:
+	@$(PHP_CONT) bin/console app:customer:transaction:list $(customer)
+
+## —— Tests ————————————————————————————————————————————————————————————————
+test:
+	@$(PHP_CONT) php -dxdebug.mode=coverage bin/phpunit --testdox --coverage-text
